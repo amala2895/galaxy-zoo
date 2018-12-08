@@ -1,18 +1,24 @@
 from __future__ import print_function
 import zipfile
 import os
+from torch.utils.data import DataLoader
+from torch.utils import data
+
 
 import torchvision.transforms as transforms
+
+image_folder = 'data/images_training_rev1'
 
 # once the images are loaded, how do we pre-process them before being passed into the network
 # by default, we resize the images to 32 x 32 in size
 # and normalize them to mean = 0 and standard-deviation = 1 based on statistics collected from
 # the training set
-data_transforms = transforms.Compose([
-    transforms.Resize((128, 128)),
-    transforms.ToTensor(),
-    #transforms.Normalize((0.3337, 0.3064, 0.3171), ( 0.2672, 0.2564, 0.2629))
-])
+
+#data_transforms = transforms.Compose([                    UNCOMMENT IF TRANSFORMS WORK CORRECTLY
+#    transforms.Resize((128, 128)),
+#    transforms.ToTensor(),
+#    #transforms.Normalize((0.3337, 0.3064, 0.3171), ( 0.2672, 0.2564, 0.2629))
+#])
 
 
 def initialize_data(folder):
@@ -27,15 +33,59 @@ def initialize_data(folder):
         zip_ref = zipfile.ZipFile(train_zip, 'r')
         zip_ref.extractall(folder)
         zip_ref.close()
+        
+    # make validation_data by using images 49001 - last           UNCOMMENT ALL IF DATA NEEDS TO BE DIVIDED IN TRAINING AND VALIDATION
+    #val_folder = folder + '/images_validation_rev1'
+    #if not os.path.isdir(val_folder):
+    #    print(val_folder + ' not found, making a validation set')
+    #    os.mkdir(val_folder)
+    #    for i,dirs in enumerate(os.listdir(train_folder)):
+    #        #if(i % 100 == 0):
+    #        #    print(i)
+    #        if i > 49000:
+    #            # move file to validation folder
+    #            os.rename(train_folder + '/' + dirs, val_folder + '/' + dirs)
+    
+    
+def loader(label_ids_training, label_values_training, label_ids_validation, label_values_validation, crop_size, resolution, batch_size, shuffle):
+    
+    class Dataset(data.Dataset):
+      #'Characterizes a dataset for PyTorch'
+        def __init__(self, list_IDs, labels, image_folder, crop_size, resolution):
+            'Initialization'
+            self.labels = labels
+            self.list_IDs = list_IDs
+            self.transforms=transforms
+            self.image_folder=image_folder
+            self.crop_size = crop_size
+            self.resolution = resolution
 
-    # make validation_data by using images 49001 - last
-    val_folder = folder + '/images_validation_rev1'
-    if not os.path.isdir(val_folder):
-        print(val_folder + ' not found, making a validation set')
-        os.mkdir(val_folder)
-        for i,dirs in enumerate(os.listdir(train_folder)):
-            #if(i % 100 == 0):
-            #    print(i)
-            if i > 49000:
-                # move file to validation folder
-                os.rename(train_folder + '/' + dirs, val_folder + '/' + dirs)
+        def __len__(self):
+            'Denotes the total number of samples'
+            return len(self.list_IDs)
+
+        def __getitem__(self, index):
+            'Generates one sample of data'
+            # Select sample
+            ID = self.list_IDs[index]
+
+            # Load data and get label
+            img = Image.open(self.image_folder + '/' + str(ID) + '.jpg')
+
+            #to do self transforms 
+            X= transforms.CenterCrop(self.crop_size)(img)
+            X=transforms.Resize(self.resolution)(X)
+            X = transforms.ToTensor()(X)
+            y = torch.from_numpy(np.array(self.labels[ID]))
+
+            return X, y
+        
+    training_set = Dataset(label_ids_training, label_values_training, image_folder, crop_size, resolution)
+    validation_set = Dataset(label_ids_validation, label_values_validation, image_folder, crop_size, resolution)
+    
+    params = {'batch_size': batch_size,
+              'shuffle': shuffle}
+    training_loader = DataLoader(training_set, **params)
+    
+    return training_loader
+
