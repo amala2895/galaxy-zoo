@@ -7,6 +7,8 @@ import zipfile
 
 training_csv = 'data/training_solutions_rev1.csv'
 training_csv_zip='data/training_solutions_rev1.zip'
+
+
 def ylabel_raw():
     label_values_file = 'data/label_values.npy'
   
@@ -52,7 +54,7 @@ def ylabel_raw():
    
     return label_ids, label_values
 
-def getYlabel(no_train,no_val):
+def getYlabel(no_train, no_val):
     
     label_ids, label_values=ylabel_raw()
     total=len(label_ids)
