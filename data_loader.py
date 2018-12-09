@@ -28,10 +28,22 @@ question_starts = [0,3,5,7,9,13,15,18,25,28,31,37]
 #    #transforms.Normalize((0.3337, 0.3064, 0.3171), ( 0.2672, 0.2564, 0.2629))
 #])
 
-
+def initialize_test_data(folder):
+    test_zip = folder + '/images_test_rev1.zip'
+   
+    if not os.path.exists(test_zip):
+        raise(RuntimeError("Could not find " + test_zip))
+    
+    test_folder = folder + '/images_test_rev1'
+    if not os.path.isdir(test_folder):
+        print(test_folder + ' not found, extracting ' + test_zip)
+        zip_ref = zipfile.ZipFile(test_zip, 'r')
+        zip_ref.extractall(folder)
+        zip_ref.close()
+        
 def initialize_data(folder):
     train_zip = folder + '/images_training_rev1.zip'
-    print(train_zip)
+   
     if not os.path.exists(train_zip):
         raise(RuntimeError("Could not find " + train_zip))
     # extract train_data.zip to train_data
@@ -41,6 +53,8 @@ def initialize_data(folder):
         zip_ref = zipfile.ZipFile(train_zip, 'r')
         zip_ref.extractall(folder)
         zip_ref.close()
+        
+    
         
     # make validation_data by using images 49001 - last           UNCOMMENT ALL IF DATA NEEDS TO BE DIVIDED IN TRAINING AND VALIDATION
     #val_folder = folder + '/images_validation_rev1'
@@ -55,7 +69,7 @@ def initialize_data(folder):
     #            os.rename(train_folder + '/' + dirs, val_folder + '/' + dirs)
     
     
-def loader(label_ids_training, label_values_training, label_ids_validation, label_values_validation, crop_size, resolution, batch_size, shuffle, questions):
+def loader(label_ids, label_values, crop_size, resolution, batch_size, shuffle, questions,transforms1=None):
     
     class Dataset(data.Dataset):
       #'Characterizes a dataset for PyTorch'
@@ -63,7 +77,7 @@ def loader(label_ids_training, label_values_training, label_ids_validation, labe
             'Initialization'
             self.labels = labels
             self.list_IDs = list_IDs
-            self.transforms=transforms
+            self.transforms=transforms1
             self.image_folder=image_folder
             self.crop_size = crop_size
             self.resolution = resolution
@@ -80,11 +94,14 @@ def loader(label_ids_training, label_values_training, label_ids_validation, labe
 
             # Load data and get label
             img = Image.open(self.image_folder + '/' + str(ID) + '.jpg')
-
+            
             #to do self transforms 
             X= transforms.CenterCrop(self.crop_size)(img)
-            X=transforms.Resize(self.resolution)(X)
+            X= transforms.Resize(self.resolution)(X)
             X = transforms.ToTensor()(X)
+            if self.transforms is not None:
+                X = self.transforms(X)
+                
             y = torch.from_numpy(np.array(self.labels[ID]))
             if(self.questions != 0):
                 y = y[question_starts[self.questions-1] : question_starts[self.questions]]
@@ -93,13 +110,15 @@ def loader(label_ids_training, label_values_training, label_ids_validation, labe
         
     if(questions > 11 or questions < 0):
         raise(RuntimeError("Incorrect question number! Valid range: 0 - 11"))
-    training_set = Dataset(label_ids_training, label_values_training, image_folder, crop_size, resolution, questions)
-    validation_set = Dataset(label_ids_validation, label_values_validation, image_folder, crop_size, resolution, questions)
+    
+    data_set = Dataset(label_ids, label_values, image_folder, crop_size, resolution, questions)
+    
+  
     
     params = {'batch_size': batch_size,
               'shuffle': shuffle}
-    training_loader = DataLoader(training_set, **params)
-    validation_loader = DataLoader(validation_set, **params)
+    data_loader= DataLoader(data_set, **params)
+   
     
-    return training_loader, validation_loader
+    return data_loader
 
