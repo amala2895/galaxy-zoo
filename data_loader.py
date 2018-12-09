@@ -3,11 +3,19 @@ import zipfile
 import os
 from torch.utils.data import DataLoader
 from torch.utils import data
+from PIL import Image
+import torch
+import numpy as np
+
 
 
 import torchvision.transforms as transforms
 
 image_folder = 'data/images_training_rev1'
+
+#3,2,2,2,4,2,3,7,3,3,6   Number of answers per question
+question_starts = [0,3,5,7,9,13,15,18,25,28,31,37]
+
 
 # once the images are loaded, how do we pre-process them before being passed into the network
 # by default, we resize the images to 32 x 32 in size
@@ -47,11 +55,11 @@ def initialize_data(folder):
     #            os.rename(train_folder + '/' + dirs, val_folder + '/' + dirs)
     
     
-def loader(label_ids_training, label_values_training, label_ids_validation, label_values_validation, crop_size, resolution, batch_size, shuffle):
+def loader(label_ids_training, label_values_training, label_ids_validation, label_values_validation, crop_size, resolution, batch_size, shuffle, questions):
     
     class Dataset(data.Dataset):
       #'Characterizes a dataset for PyTorch'
-        def __init__(self, list_IDs, labels, image_folder, crop_size, resolution):
+        def __init__(self, list_IDs, labels, image_folder, crop_size, resolution, questions):
             'Initialization'
             self.labels = labels
             self.list_IDs = list_IDs
@@ -59,6 +67,7 @@ def loader(label_ids_training, label_values_training, label_ids_validation, labe
             self.image_folder=image_folder
             self.crop_size = crop_size
             self.resolution = resolution
+            self.questions = questions
 
         def __len__(self):
             'Denotes the total number of samples'
@@ -77,11 +86,15 @@ def loader(label_ids_training, label_values_training, label_ids_validation, labe
             X=transforms.Resize(self.resolution)(X)
             X = transforms.ToTensor()(X)
             y = torch.from_numpy(np.array(self.labels[ID]))
-
+            if(self.questions != 0):
+                y = y[question_starts[self.questions-1] : question_starts[self.questions]]
+                #y = y[0:2]
             return X, y
         
-    training_set = Dataset(label_ids_training, label_values_training, image_folder, crop_size, resolution)
-    validation_set = Dataset(label_ids_validation, label_values_validation, image_folder, crop_size, resolution)
+    if(questions > 11 or questions < 0):
+        raise(RuntimeError("Incorrect question number! Valid range: 0 - 11"))
+    training_set = Dataset(label_ids_training, label_values_training, image_folder, crop_size, resolution, questions)
+    validation_set = Dataset(label_ids_validation, label_values_validation, image_folder, crop_size, resolution, questions)
     
     params = {'batch_size': batch_size,
               'shuffle': shuffle}
