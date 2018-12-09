@@ -99,6 +99,7 @@ def loader(label_ids_training, label_values_training, label_ids_validation, labe
     params = {'batch_size': batch_size,
               'shuffle': shuffle}
     training_loader = DataLoader(training_set, **params)
+    validation_loader = DataLoader(validation_set, **params)
     
-    return training_loader
+    return training_loader, validation_loader
 

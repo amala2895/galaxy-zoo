@@ -4,10 +4,10 @@ import pandas as pd
 import csv
 import numpy as np
 import os
-
+import zipfile
 
 training_csv = 'data/training_solutions_rev1.csv'
-
+training_csv_zip='data/training_solutions_rev1.zip'
 
 def separate():
     
@@ -23,15 +23,21 @@ def separate():
         label_values_validation = np.load('data/label_values_validation.npy').item()
         return label_ids_training, label_ids_validation, label_values_training, label_values_validation
     
-    if not os.path.exists('data/training_solutions_rev1.csv'):
-        raise(RuntimeError("Could not find " + 'data/training_solutions_rev1.csv'))
+    if not os.path.exists(training_csv):
+        if not os.path.exists(training_csv_zip):
+            raise(RuntimeError("Could not find " + 'data/training_solutions_rev1.csv'))
+        else:
+            zip_ref = zipfile.ZipFile(training_csv_zip, 'r')
+            #print("unzipped")
+            zip_ref.extractall('data/')
+            print("unzipped")
+            zip_ref.close()
 
     label_values_training = {}
     label_values_validation = {}
     
               
-    if not os.path.exists(training_csv):
-        raise(RuntimeError("Could not find "))  
+   
               
     reader = csv.reader(open(training_csv, 'r'))
 
