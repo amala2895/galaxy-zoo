@@ -59,10 +59,11 @@ for f in tqdm(os.listdir(test_dir)):
     output_file.write("%s," % (f))
     for o in range(0,37):
         if o==36:
-            output_file.write("%f"% output[o])
+            output_file.write("%f\n"% output[o])
         else:
             output_file.write("%f,"% output[o])
     i=i+1
+    
     
 print(i)
     
