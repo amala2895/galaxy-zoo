@@ -27,11 +27,11 @@ import os
 # Training settings
 parser = argparse.ArgumentParser(description='Galaxy zoo project')
 parser.add_argument('--data', type=str, default='data', metavar='D',
-                    help="folder where data is located")
+                    help='folder where data is located')
 parser.add_argument('--crop_size', type=str, default=256, metavar='D',
-                    help="Crop Size of images")
+                    help='Crop Size of images')
 parser.add_argument('--resolution', type=str, default=64, metavar='D',
-                    help="Final Resolution of images")
+                    help='Final Resolution of images')
 parser.add_argument('--batch_size', type=int, default=64, metavar='N',
                     help='input batch size for training (default: 64)')
 parser.add_argument('--epochs', type=int, default=5, metavar='N',
@@ -48,7 +48,7 @@ parser.add_argument('--log-interval', type=int, default=10, metavar='N',
 parser.add_argument('--question', type=int, default=0, metavar='N',
                     help='Question number for which training has to be done. If 0 then all questions')
 
-parser.add_argument('--model_directory', type=str, default="models", metavar='N',
+parser.add_argument('--model_directory', type=str, default='models', metavar='N',
                     help='directory to store models')
 
 parser.add_argument('--validation_length', type=int, default=20, metavar='N',
@@ -57,8 +57,8 @@ parser.add_argument('--validation_length', type=int, default=20, metavar='N',
 parser.add_argument('--train_length', type=int, default=1000, metavar='N',
                     help='length of train set')
 
-input_args = ""
-args = parser.parse_args(input_args)
+
+args = parser.parse_args()
 torch.manual_seed(args.seed)
 
 
@@ -175,3 +175,5 @@ for epoch in range(1, args.epochs + 1):
         model_file = args.model_directory+'/model_' + str(epoch) + '.pth'
         torch.save(model.state_dict(), model_file)
 
+model_file = args.model_directory+'/model_' + str(epoch) + '.pth'
+torch.save(model.state_dict(), model_file)

@@ -64,6 +64,6 @@ for f in tqdm(os.listdir(test_dir)):
             output_file.write("%f,"% output[o])
     i=i+1
     
-    
+output_file.close()
 print(i)
     
