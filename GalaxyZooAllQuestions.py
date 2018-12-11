@@ -5,7 +5,7 @@
 # 
 # ### Python files required to run ths notebook: data_loader.py, separate_training_validation.py
 
-# In[14]:
+# In[23]:
 
 
 from __future__ import print_function
@@ -21,7 +21,7 @@ import numpy as np
 import os
 
 
-# In[16]:
+# In[24]:
 
 
 # Training settings
@@ -62,7 +62,7 @@ args = parser.parse_args(input_args)
 torch.manual_seed(args.seed)
 
 
-# In[17]:
+# In[25]:
 
 
 ### Data Initialization and Loading
@@ -70,15 +70,15 @@ from data_loader import initialize_data, loader
 initialize_data(args.data) 
 
 
-# In[18]:
+# In[26]:
 
 
 from YLabelCreate import getYlabel
 
-label_ids_training, label_ids_validation, label_values_training, label_values_validation = getYlabel(5000,100)
+label_ids_training, label_ids_validation, label_values_training, label_values_validation = getYlabel(args.train_length,args.validation_length)
 
 
-# In[19]:
+# In[27]:
 
 
 crop_size = args.crop_size
@@ -94,7 +94,7 @@ transformations = transforms.Compose([
     transforms.ToTensor()])
 
 
-# In[20]:
+# In[28]:
 
 
 train_loader = loader(label_ids_training, label_values_training, crop_size, resolution, batch_size, shuffle, questions)
@@ -102,13 +102,13 @@ shuffle=False
 val_loader=loader(label_ids_validation, label_values_validation, crop_size, resolution, batch_size, shuffle, questions)
 
 
-# In[21]:
+# In[29]:
 
 
 from Model_All_Questions import Net
 
 
-# In[22]:
+# In[30]:
 
 
 model = Net()
@@ -117,7 +117,7 @@ loss_train=nn.MSELoss()
 loss_val=nn.MSELoss(reduction='sum')
 
 
-# In[23]:
+# In[31]:
 
 
 def train(epoch):
@@ -125,8 +125,9 @@ def train(epoch):
     for batch_idx, (data, target) in enumerate(train_loader):
         data, target = Variable(data), Variable(target).float()
         optimizer.zero_grad()
-        output = model(data)
+        output = model(data).float()
         loss = loss_train(output, target)
+        loss = Variable(loss, requires_grad = True)
         loss.backward()
         optimizer.step()
         if batch_idx % args.log_interval == 0:
@@ -136,7 +137,7 @@ def train(epoch):
 
 
 
-# In[24]:
+# In[32]:
 
 
 def validation():
@@ -145,8 +146,10 @@ def validation():
     correct = 0
     for data, target in val_loader:
         data, target = Variable(data, volatile=True), Variable(target).float()
-        output = model(data)
-        validation_loss += loss_val(output, target) # sum up batch loss
+        output = model(data).float()
+        loss=loss_val(output, target)
+        loss = Variable(loss, requires_grad = True)
+        validation_loss += loss # sum up batch loss
         
     validation_loss /= len(val_loader.dataset)
     
@@ -157,7 +160,7 @@ def validation():
             
 
 
-# In[25]:
+# In[ ]:
 
 
 
@@ -168,7 +171,7 @@ for epoch in range(1, args.epochs + 1):
     train(epoch)
    
     validation()
-    
-    model_file = args.model_directory+'/model_' + str(epoch) + '.pth'
-    torch.save(model.state_dict(), model_file)
+    if(epoch%10==0):
+        model_file = args.model_directory+'/model_' + str(epoch) + '.pth'
+        torch.save(model.state_dict(), model_file)
 
