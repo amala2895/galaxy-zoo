@@ -171,7 +171,7 @@ for epoch in range(1, args.epochs + 1):
     train(epoch)
    
     validation()
-    if(epoch%10==0):
+    if(epoch%1==0):
         model_file = args.model_directory+'/model_' + str(epoch) + '.pth'
         torch.save(model.state_dict(), model_file)
 
