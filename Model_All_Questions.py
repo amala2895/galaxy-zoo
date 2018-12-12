@@ -32,71 +32,44 @@ class Net(nn.Module):
         
         #print(x[0])
         y=F.sigmoid(x)
-        #print(x.shape)
+        #print(x)
         normalized=self.normalize(y) 
-        #print(normalized.shape)
+        #print(normalized)
         add_dependencies=self.multiply_prob(normalized)
         
-        #print(add_dependencies.shape)
+        #print(add_dependencies)
         
         
         return add_dependencies
     
     def normalize(self,x):
-        
-        tensor_list = []
         for each in x:
-            allArrays = np.array([])
             for i in range(1,12):
                 start=self.q_a[i][0]
                 end=self.q_a[i][1]
-                #print(i)
-                #print(each[start:end])
-                n=torch.div(each[start:end],torch.sum(each[start:end])+1e-12).detach().numpy()
-                #print(n)
-                allArrays = np.concatenate([allArrays, n])
-            newtorch=torch.from_numpy(allArrays)
-          
-            tensor_list.append(newtorch)
-          
-       
-        stacked_tensor = torch.stack(tensor_list)
-       
-        return stacked_tensor
+                for j in range(start,end):
+                    each[j]=torch.div(each[j],torch.sum(each[start:end])+1e-12)
+        return x
+
+    
     
     def multiply_prob(self,n):
-        tensor_list = []
         for each in n:
-            #print(each.shape)
-            allArrays = np.array([])
             for i in range(1,12):
-                #print(i)
                 start=self.q_a[i][0]
                 end=self.q_a[i][1]
-                arr=each[start:end].detach().numpy()
-                #print(arr)
                 values=self.remove_dependencies[i]
                 if values[0]!=-1:
                     for v in values:
-                        m=each[v].detach().numpy()
-                        #print(m)
-                        arr=np.multiply(arr,m)
-                #print(arr)
-                
-                allArrays = np.concatenate([allArrays, arr])
-            #print(allArrays.shape)
-            
-            
-            newtorch=torch.from_numpy(allArrays)
-          
-            tensor_list.append(newtorch)
-          
-       
-        stacked_tensor = torch.stack(tensor_list)
-       
-        return stacked_tensor
-            
-        
+                        m=each[v]
+                       
+                        
+                        for j in range(start, end):
+                            
+                            each[j]=each[j]*m
+        return n
+
+
         
         
     def num_flat_features(self, x):
