@@ -57,25 +57,28 @@ parser.add_argument('--validation_length', type=int, default=20, metavar='N',
 parser.add_argument('--train_length', type=int, default=1000, metavar='N',
                     help='length of train set')
 
-
+parser.add_argument('--outputfile', type=str, default='output.txt', metavar='N',
+                    help='outputfile name')
 args = parser.parse_args()
 torch.manual_seed(args.seed)
-
+if torch.cuda.is_available():
+  print("cuda available")
+  print(torch.cuda.device_count())
 
 # In[25]:
 
-
+outputfile=args.outputfile
 ### Data Initialization and Loading
-from data_loader import initialize_data, loader
+from newdataLoader import initialize_data, loader
 initialize_data(args.data) 
 
 
 # In[26]:
 
 
-from YLabelCreate import getYlabel
+from YLabelCreate_augmented import getYlabel
 
-label_ids_training, label_ids_validation, label_values_training, label_values_validation = getYlabel(args.train_length,args.validation_length)
+label_ids_training, label_ids_validation, label_values_training, label_values_validation = getYlabel(args.train_length,args.validation_length,True)
 
 
 # In[27]:
@@ -88,18 +91,24 @@ batch_size = args.batch_size
 questions = args.question
 shuffle=True
 
-transformations = transforms.Compose([
-    transforms.Scale(256),
-    transforms.CenterCrop(224),
-    transforms.ToTensor()])
+transformations_train = transforms.Compose([
+                transforms.CenterCrop(crop_size),
+                transforms.Resize(resolution),
 
+                transforms.ToTensor()
+    ])
+transformations_val = transforms.Compose([
+                    transforms.CenterCrop(crop_size),
+                    transforms.Resize(resolution),
 
+                    transforms.ToTensor()
+                                            ])
 # In[28]:
 
 
-train_loader = loader(label_ids_training, label_values_training, crop_size, resolution, batch_size, shuffle, questions)
+train_loader = loader(label_ids_training, label_values_training, crop_size, resolution, batch_size, shuffle, questions,transformations_train)
 shuffle=False
-val_loader=loader(label_ids_validation, label_values_validation, crop_size, resolution, batch_size, shuffle, questions)
+val_loader=loader(label_ids_validation, label_values_validation, crop_size, resolution, batch_size, shuffle, questions,transformations_val)
 
 
 # In[29]:
@@ -112,17 +121,22 @@ from Model_All_Questions import Net
 
 
 model = Net()
-optimizer = optim.SGD(model.parameters(), lr=args.lr, momentum=args.momentum)
+optimizer = optim.Adam(model.parameters(), lr=args.lr)
 loss_train=nn.MSELoss()
 loss_val=nn.MSELoss(reduction='sum')
 
 
 # In[31]:
 
+if torch.cuda.is_available():
+  model.cuda()
 
 def train(epoch):
     model.train()
     for batch_idx, (data, target) in enumerate(train_loader):
+        if torch.cuda.is_available():
+          data=data.cuda()
+          target=target.cuda()
         data, target = Variable(data), Variable(target).float()
         optimizer.zero_grad()
         output = model(data).float()
@@ -131,11 +145,14 @@ def train(epoch):
         loss.backward()
         optimizer.step()
         if batch_idx % args.log_interval == 0:
+            f=open(outputfile, 'a')
             print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                                                                            epoch, batch_idx * len(data), len(train_loader.dataset),
-                                                                           100. * batch_idx / len(train_loader), loss.data[0]))
-
-
+                                                                           100. * batch_idx / len(train_loader), loss.item()))
+            f.write('\nTrain Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+                                                                           epoch, batch_idx * len(data), len(train_loader.dataset),
+                                                                           100. * batch_idx / len(train_loader), loss.item()))
+            f.close()
 
 # In[32]:
 
@@ -145,6 +162,9 @@ def validation():
     validation_loss = 0
     correct = 0
     for data, target in val_loader:
+        if torch.cuda.is_available():
+          data=data.cuda()
+          target=target.cuda()
         data, target = Variable(data, volatile=True), Variable(target).float()
         output = model(data).float()
         loss=loss_val(output, target)
@@ -156,9 +176,11 @@ def validation():
 
 
     print('\nValidation set: Average loss: {:.4f}\n'.format(validation_loss, correct))
-        
-            
 
+    f=open(outputfile, 'a')
+
+    f.write('\nValidation set: Average loss: {:.4f}\n'.format(validation_loss, correct))
+    f.close()
 
 # In[ ]:
 
