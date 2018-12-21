@@ -38,6 +38,7 @@ The original data set had 61578 galaxies in training set. After augmentation we 
 
 # Models
 The model used had following configuration - 
+
 Layer 1 - Convolution Layer with input as 3 channel 64 x 64 image and output as 16 channel 60 x 60 image using a 5 x 5 square filter. ReLu nonliniearity was applied. Drop out with 0.1 probability was applied. 
 
 Layer 2 - Convolution Layer with input as 16 channel, 60 x 60  and output as 32 channel, 56 x 56 using a 5 x 5 square filter. ReLu nonliniearity was applied. Drop out with 0.15 probability was applied. Further Maxpooling was also applied after this layer. 
@@ -59,7 +60,7 @@ After this layer the 37 answer probabilities are normalized question wise. This 
 # Our Approach
 Based on our two approches the model and its run changes as follows- 
 
-**Approach 1 
+**Approach 1**
 
 We find probability for answer to every question considering the given dependency of questions. Given an image we predict the probability of getting to each node of the decision tree from the root
 
@@ -68,7 +69,7 @@ So for this approach we need to multiply the probabilities of answer of previous
 Model_All_Questions.py- This file has the model for approach 1. The dependencies are multiplied in this file at the end of normalization. 
 GalaxyZooAllQuestions.py - This file is used to load data and train the model for approach 1. 
 
-**Aproach 2 
+**Approach 2 **
 
 We find probability of answer to every question individually. Given an image, we predict the probability of each answer to all questions in the decision tree
 
