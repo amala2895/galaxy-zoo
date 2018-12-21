@@ -35,20 +35,20 @@ def complete_data_augmentation(train_folder,images):
     currentDir = os.listdir(train_folder)
     
     for i,file in enumerate(currentDir):
-        
-        img = plt.imread(train_folder + file)
-        #plt.imshow(img)
-        #plt.show()
-        img_transformed = transform_image(img,90,2,6)
-        name = (train_folder + file).split(".")[0]
-        plt.imsave(name + '_0' + '.jpg',img_transformed)
-        #plt.imshow(img_transformed)
-        #plt.show()
-        #print(name)
-        img_transformed2 = transform_image(img,60,3,12)
-        plt.imsave(name + '_1' + '.jpg',img_transformed2)
-        #plt.imshow(img_transformed2)
-        #plt.show()     
+        if "_" not in file:	     
+           img = plt.imread(train_folder + file)
+           #plt.imshow(img)
+           #plt.show()
+           img_transformed = transform_image(img,90,2,6)
+           name = (train_folder + file).split(".")[0]
+           plt.imsave(name + '_0' + '.jpg',img_transformed)
+           #plt.imshow(img_transformed)
+           #plt.show()
+           print(name)
+           img_transformed2 = transform_image(img,60,3,12)
+           plt.imsave(name + '_1' + '.jpg',img_transformed2)
+           #plt.imshow(img_transformed2)
+           #plt.show()     
         
 complete_data_augmentation("data_augmented/images_training_rev1/", 1)   
         

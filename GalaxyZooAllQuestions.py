@@ -59,6 +59,12 @@ parser.add_argument('--train_length', type=int, default=1000, metavar='N',
 
 parser.add_argument('--outputfile', type=str, default='output.txt', metavar='N',
                     help='outputfile name')
+parser.add_argument('--model', type=str, default='Model', metavar='N',
+                    help='Model file name')
+parser.add_argument('--augmentation', type=str, default="", metavar='N',
+                    help='augmentation file name')
+parser.add_argument('--previous_model', type=str, default='', metavar='N',
+                    help='previous model path')
 args = parser.parse_args()
 torch.manual_seed(args.seed)
 if torch.cuda.is_available():
@@ -72,13 +78,18 @@ outputfile=args.outputfile
 from newdataLoader import initialize_data, loader
 initialize_data(args.data) 
 
-
+ylabelcreate=args.augmentation
+x=True
+if(ylabelcreate==""):
+   x=False
+if(x):
+  print("doing augmentation")
 # In[26]:
 
 
 from YLabelCreate_augmented import getYlabel
 
-label_ids_training, label_ids_validation, label_values_training, label_values_validation = getYlabel(args.train_length,args.validation_length,True)
+label_ids_training, label_ids_validation, label_values_training, label_values_validation = getYlabel(args.train_length,args.validation_length,x)
 
 
 # In[27]:
