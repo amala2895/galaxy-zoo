@@ -48,6 +48,31 @@ Layer 4 - Convolution Layer with input as 64 channel, 13 x 13  and output as 128
 
 Batch Normalization is used in all convolution layers. 
 
-Layer 5 - Dense layer whose input is 128 x 5 x 5 flattened vector and output is 1024. Dropout of 0.3 probability is applied. 
+Layer 5 - Dense layer whose input is 128 x 5 x 5 flattened vector and output is 1024. Dropout of 0.3 probability is applied. ReLu nonliniearity was applied. 
 
-Model_All_Questions.py 
+Layer 6 - Dense layer whose input is 1024 vector and output is 512. Dropout of 0.3 probability is applied. ReLu nonliniearity was applied. 
+
+Layer 6 - Dense layer whose input is 512 vector and output is 37. 
+
+After this layer the 37 answer probabilities are normalized question wise. This is done to make the sum of probabilities approximate 1 for answers of each question. 
+
+# Our Approach
+Based on our two approches the model and its run changes as follows- 
+
+**Approach 1 
+
+We find probability for answer to every question considering the given dependency of questions. Given an image we predict the probability of getting to each node of the decision tree from the root
+
+So for this approach we need to multiply the probabilities of answer of previous questions that lead to the current question with all answer probabilities of current question. For example question 2 is asked if answer of question 1 is 2nd answer. So we multiply the probability of question 1's 2nd answer with all of question 2's answers. And since certain questions like question 1 and question 6 are asked in all cases their answers can be kept as is. 
+
+Model_All_Questions.py- This file has the model for approach 1. 
+GalaxyZooAllQuestions.py - This file is used to load data and train the model for approach 1. 
+
+**Aproach 2 
+
+We find probability of answer to every question individually. Given an image, we predict the probability of each answer to all questions in the decision tree
+
+For this approach 
+
+
+
