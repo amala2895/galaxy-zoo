@@ -65,14 +65,17 @@ We find probability for answer to every question considering the given dependenc
 
 So for this approach we need to multiply the probabilities of answer of previous questions that lead to the current question with all answer probabilities of current question. For example question 2 is asked if answer of question 1 is 2nd answer. So we multiply the probability of question 1's 2nd answer with all of question 2's answers. And since certain questions like question 1 and question 6 are asked in all cases their answers can be kept as is. 
 
-Model_All_Questions.py- This file has the model for approach 1. 
+Model_All_Questions.py- This file has the model for approach 1. The dependencies are multiplied in this file at the end of normalization. 
 GalaxyZooAllQuestions.py - This file is used to load data and train the model for approach 1. 
 
 **Aproach 2 
 
 We find probability of answer to every question individually. Given an image, we predict the probability of each answer to all questions in the decision tree
 
-For this approach 
+For this approach we first divide the probabilities of answer of previous questions that lead to the current question with all answer probabilities of current question
+
+question_wise_model.py - This file has the model for approach 2. 
+GalaxyZooQuestionsWise.py - This file is used to load data and train the model for approach 2. The 37 length y label is first altered in this file before training. 
 
 
 
