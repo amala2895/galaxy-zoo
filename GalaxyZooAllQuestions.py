@@ -26,22 +26,31 @@ import os
 
 # Training settings
 parser = argparse.ArgumentParser(description='Galaxy zoo project')
+
 parser.add_argument('--data', type=str, default='data', metavar='D',
                     help='folder where data is located')
+
 parser.add_argument('--crop_size', type=str, default=256, metavar='D',
                     help='Crop Size of images')
+
 parser.add_argument('--resolution', type=str, default=64, metavar='D',
                     help='Final Resolution of images')
+
 parser.add_argument('--batch_size', type=int, default=64, metavar='N',
                     help='input batch size for training (default: 64)')
+
 parser.add_argument('--epochs', type=int, default=5, metavar='N',
-                    help='number of epochs to train (default: 15)')
+                    help='number of epochs to train (default: 5)')
+
 parser.add_argument('--lr', type=float, default=0.01, metavar='LR',
                     help='learning rate (default: 0.01)')
+
 parser.add_argument('--momentum', type=float, default=0.5, metavar='M',
                     help='SGD momentum (default: 0.5)')
+
 parser.add_argument('--seed', type=int, default=1, metavar='S',
                     help='random seed (default: 1)')
+
 parser.add_argument('--log-interval', type=int, default=10, metavar='N',
                     help='how many batches to wait before logging training status')
 
@@ -59,31 +68,33 @@ parser.add_argument('--train_length', type=int, default=1000, metavar='N',
 
 parser.add_argument('--outputfile', type=str, default='output.txt', metavar='N',
                     help='outputfile name')
-parser.add_argument('--model', type=str, default='Model', metavar='N',
-                    help='Model file name')
+
 parser.add_argument('--augmentation', type=str, default="", metavar='N',
                     help='augmentation file name')
+
 parser.add_argument('--previous_model', type=str, default='', metavar='N',
                     help='previous model path')
+
 args = parser.parse_args()
 torch.manual_seed(args.seed)
 if torch.cuda.is_available():
-  print("cuda available")
-  print(torch.cuda.device_count())
+    print("cuda available")
+    print(torch.cuda.device_count())
 
 # In[25]:
 
 outputfile=args.outputfile
 ### Data Initialization and Loading
-from newdataLoader import initialize_data, loader
+
+from data_Loader import initialize_data, loader
 initialize_data(args.data) 
 
 ylabelcreate=args.augmentation
 x=True
 if(ylabelcreate==""):
-   x=False
+    x=False
 if(x):
-  print("doing augmentation")
+    print("doing augmentation")
 # In[26]:
 
 
@@ -140,14 +151,14 @@ loss_val=nn.MSELoss(reduction='sum')
 # In[31]:
 
 if torch.cuda.is_available():
-  model.cuda()
+    model.cuda()
 
 def train(epoch):
     model.train()
     for batch_idx, (data, target) in enumerate(train_loader):
         if torch.cuda.is_available():
-          data=data.cuda()
-          target=target.cuda()
+            data=data.cuda()
+            target=target.cuda()
         data, target = Variable(data), Variable(target).float()
         optimizer.zero_grad()
         output = model(data).float()
@@ -174,8 +185,8 @@ def validation():
     correct = 0
     for data, target in val_loader:
         if torch.cuda.is_available():
-          data=data.cuda()
-          target=target.cuda()
+            data=data.cuda()
+            target=target.cuda()
         data, target = Variable(data, volatile=True), Variable(target).float()
         output = model(data).float()
         loss=loss_val(output, target)
