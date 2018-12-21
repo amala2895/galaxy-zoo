@@ -64,7 +64,7 @@ class Net(nn.Module):
         #print(normalized)
         #add_dependencies=self.multiply_prob(normalized)
         #print(add_dependencies)
-        return add_dependencies
+        return normalized
     
     
     def normalize(self,x):

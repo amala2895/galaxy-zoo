@@ -170,7 +170,7 @@ val_loader=loader(label_ids_validation, label_values_validation, crop_size, reso
 # In[29]:
 
 
-from Model_All_Questions import Net
+from question_wise_model import Net
 
 
 # In[30]:
