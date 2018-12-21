@@ -86,7 +86,7 @@ if torch.cuda.is_available():
 outputfile=args.outputfile
 ### Data Initialization and Loading
 
-from data_Loader import initialize_data, loader
+from data_loader import initialize_data, loader
 initialize_data(args.data) 
 
 ylabelcreate=args.augmentation
