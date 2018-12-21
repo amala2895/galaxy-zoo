@@ -69,7 +69,7 @@ So for this approach we need to multiply the probabilities of answer of previous
 Model_All_Questions.py- This file has the model for approach 1. The dependencies are multiplied in this file at the end of normalization. 
 GalaxyZooAllQuestions.py - This file is used to load data and train the model for approach 1. 
 
-**Approach 2 **
+**Approach 2**
 
 We find probability of answer to every question individually. Given an image, we predict the probability of each answer to all questions in the decision tree
 
