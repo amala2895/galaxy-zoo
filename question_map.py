@@ -7,8 +7,8 @@ def getDependencyMap():
     remove_dependencies[5] = [1,4]
     remove_dependencies[6] = [-1]
     remove_dependencies[7] = [0]
-    remove_dependencies[8] = [14]
-    remove_dependencies[9] = [3]
+    remove_dependencies[8] = [13]
+    remove_dependencies[9] = [1,3]
     remove_dependencies[10] = [1,4,7]
     remove_dependencies[11] = [1,4,7]
     
