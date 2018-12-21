@@ -5,14 +5,14 @@ import numpy as np
 import os
 import zipfile
 
-training_csv = 'data/training_solutions_rev1.csv'
-training_csv_zip='data/training_solutions_rev1.zip'
+training_csv = 'data_augmented/training_solutions_rev1.csv'
+training_csv_zip='data_augmented/training_solutions_rev1.zip'
 
 
 def ylabel_raw():
-    label_values_file = 'data/label_values.npy'
+    label_values_file = 'data_augmented/label_values.npy'
   
-    label_ids_file = 'data/label_ids.npy'
+    label_ids_file = 'data_augmented /label_ids.npy'
     if os.path.exists(label_values_file) and  os.path.exists(label_ids_file):
         
         label_ids = np.load(label_ids_file)
@@ -25,7 +25,7 @@ def ylabel_raw():
         else:
             zip_ref = zipfile.ZipFile(training_csv_zip, 'r')
             #print("unzipped")
-            zip_ref.extractall('data/')
+            zip_ref.extractall('data_augmented /')
             print("unzipped")
             zip_ref.close()
 
@@ -56,9 +56,9 @@ def ylabel_raw():
 
 def ylabel_augmented():
     print("augmenting y")
-    label_values_file = 'data/label_values_augmented.npy'
+    label_values_file = 'data_augmented/label_values_augmented.npy'
   
-    label_ids_file = 'data/label_ids_augmented.npy'
+    label_ids_file = 'data_augmented/label_ids_augmented.npy'
     if os.path.exists(label_values_file) and  os.path.exists(label_ids_file):
         
         label_ids = np.load(label_ids_file)
@@ -71,7 +71,7 @@ def ylabel_augmented():
         else:
             zip_ref = zipfile.ZipFile(training_csv_zip, 'r')
             #print("unzipped")
-            zip_ref.extractall('data/')
+            zip_ref.extractall('data_augmented/')
             print("unzipped")
             zip_ref.close()
 

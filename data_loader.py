@@ -12,7 +12,7 @@ import numpy as np
 
 import torchvision.transforms as transforms
 
-image_folder = 'data/images_training_rev1'
+image_folder = 'data_augmented/images_training_rev1'
 
 #3,2,2,2,4,2,3,7,3,3,6   Number of answers per question
 question_starts = [0,3,5,7,9,13,15,18,25,28,31,37]
