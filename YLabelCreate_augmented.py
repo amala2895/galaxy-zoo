@@ -12,7 +12,7 @@ training_csv_zip='data_augmented/training_solutions_rev1.zip'
 def ylabel_raw():
     label_values_file = 'data_augmented/label_values.npy'
   
-    label_ids_file = 'data_augmented /label_ids.npy'
+    label_ids_file = 'data_augmented/label_ids.npy'
     if os.path.exists(label_values_file) and  os.path.exists(label_ids_file):
         
         label_ids = np.load(label_ids_file)
