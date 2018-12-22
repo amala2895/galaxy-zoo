@@ -58,6 +58,9 @@ Layer 6 - Dense layer whose input is 512 vector and output is 37.
 After this layer the 37 answer probabilities are normalized question wise. This is done to make the sum of probabilities approximate 1 for answers of each question. 
 
 # Our Approach
+
+We used a baseline model on the original data without augmentation and Transformations like cropping and resizing. The model had 3 convolution layers and 2 dense layers. (baselinemodel.py)
+
 Based on our two approches the model and its run changes as follows- 
 
 **Approach 1**
@@ -78,5 +81,5 @@ For this approach we first divide the probabilities of answer of previous questi
 question_wise_model.py - This file has the model for approach 2. 
 GalaxyZooQuestionsWise.py - This file is used to load data and train the model for approach 2. The 37 length y label is first altered in this file before training. 
 
-We used a baseline model on the original data without augmentation and Transformations like cropping and resizing. The model had 3 convolution layers and 2 dense layers. (baselinemodel.py)
+
 
