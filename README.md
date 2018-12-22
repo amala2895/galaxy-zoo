@@ -78,5 +78,5 @@ For this approach we first divide the probabilities of answer of previous questi
 question_wise_model.py - This file has the model for approach 2. 
 GalaxyZooQuestionsWise.py - This file is used to load data and train the model for approach 2. The 37 length y label is first altered in this file before training. 
 
-
+We used a baseline model on the original data without augmentation and Transformations like cropping and resizing. The model had 3 convolution layers and 2 dense layers. (baselinemodel.py)
 
