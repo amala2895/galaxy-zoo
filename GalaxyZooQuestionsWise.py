@@ -119,7 +119,9 @@ for id in label_ids_training:
                 
                     for j in range(start, end):
                         label_values_training[id][j]=label_values_training[id][j]/m
-
+                        if(label_values_training[id][j]!=1 or label_values_training[id][j]!=0):
+                           label_values_training[id][j]=round(label_values_training[id][j],6)
+#print(label_values_training)
 for id in label_ids_validation:
     
     for i in range(1,12):
@@ -134,6 +136,8 @@ for id in label_ids_validation:
                     
                     for j in range(start, end):
                         label_values_validation[id][j]=label_values_validation[id][j]/m
+                        if(label_values_validation[id][j]!=1 or label_values_validation[id][j]!=0):
+                           label_values_validation[id][j]=round(label_values_validation[id][j],6)
 
 
 
